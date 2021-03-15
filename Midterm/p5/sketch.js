@@ -278,6 +278,10 @@ function badReaction(){                //Putting reaction when it's on BAD mode.
   myBLE.write(myCharacteristicMode, true); 
 }
 
+function connectToBle() {
+  // Connect to a device by passing the service UUID
+  myBLE.connect(serviceUuid, gotCharacteristics);
+}
 
 
 // A function that will be called once got characteristics
