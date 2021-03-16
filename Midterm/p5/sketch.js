@@ -30,12 +30,13 @@ let lastSitTimer = 0;
 let lastAwayTimer = 40000;
 let lastCommandTimer = 0;
 let sit = false;
-let away = false;
+let away = true;
 let leanOn = false;
 let leanedOn = false;
 let niceMode = false;
 let cNice = niceMode;
-let masaged = false;
+let massaged = false;
+let massaging = false;
 let chances = [1];
 let framerate = 60;
 
@@ -43,8 +44,8 @@ let framerate = 60;
 let modeA_bad = ["Hey, you, I’m tired. Move your ass off me now.", "Maybe you enjoy working over hours, but I don’t, ok? Way past my working hours, I need a break."];
 let modeB_bad = ["Lost mind and hearing in your work? I need a break now", "Let’s go, chop-chop, move", "Your ass is overheating my face"];
 let modeC_bad = ["Hey, where do you think you are going? Give me a back massage", "Don’t you think you should massage my back a little after all I’ve done for you?"];
-let modeC1_bad = ["placeholder"];
-let modeC2_bad = [""];
+let modeC1_bad = ["modeC1 bad 1", "modeC1 bad 2"];  //more to come
+let modeC2_bad = ["modeC2 bad 1", "modeC2 bad 2"];  //more to come
 let modeD_bad = ["O!M!G you call that a break? Go enjoy your life a little longer", "Jesus too soon, I’m only at my third cig. Come back later", "I think I need a longer break. From you. byeeee"];
 let modeE_bad = ["Hello? Anyone here? I’m abandoned!", "I'm tired of entertaining myself, time to come back!", "AAAAAAAAAAAAAAAAA! AAAAAAAAAAAAAA! AAAAAAAAAAAA!", "I! NEED! YOU! TO! COME! BACK! TO! ME! NOW!", "ME! ME! ME! ME! ME! ME! ME!"];
 let modeF_bad = ["Where have you been? Making a baby?", "Wow surprised you still remember me", "Oh, now you think of me when you need somewhere to sit?"];
@@ -55,7 +56,7 @@ let modeH_bad = ["Good girl!", "Attaboy!", "Shouldn’t have leaned on me in the
 let modeA_nice = ["Are you comfortable sitting here?", "You are working so hard. Let me give you a nice massage.", "Hey, sitting down too long isn’t good for you. Time to stand up and stretch"];
 let modeB_nice = ["I know you work hard, but getting some rest is important too.", "I think you should rest a little, but I will stop bothering you."];
 let modeC_nice = ["Don't forget to drink water to keep hydrated", "Get some fresh air and clear your mind. See you soon"];
-let modeC2_nice = [""];
+let modeC2_nice = ["modeC2 nice 1", "modeC2 nice 2"];   //more to come
 let modeD_nice = ["Oh you came back so soon, you deserve a longer break", "Happy to see you back, but are you sure that short break is enough?"];
 let modeF_nice = ["I missed you a tone. You are finally back!", "Hope you had a nice break, time to work hard now"];
 let modeG_nice = ["Happy to support you in all ways"];
@@ -94,10 +95,10 @@ function draw() {
   }
 
   //Detecting if masaging or not
-  if (myValueForceRight<60 || myValueForceLeft <60){
-    masaged = true;
+  if (myValueForceRight<60 || myValueForceLeft <60 ){
+    massaging = true;
   }else {
-    masaged = false;
+    massaging = false;
   }
 
   //Detecting if sitted or not
@@ -163,15 +164,16 @@ function draw() {
     //---Leaving---
     if (awayTimer == 1){                                                //C. As soon as the user left the seat
       modeC(); //Mode C
+      massaged = false;
       lastCommandTimer = awayTimer;
     }
 
     //---Massage/touching---
-    if (masaged){                                                       //C.2. User massaged the chair
+    if (massaging && !massaged){                                                       //C.2. User massaged the chair
       modeC2(); // Mode C.2
       lastCommandTimer = awayTimer;
-      masaged = false;
-    } else if (awayTimer == lastCommandTimer + 5*framerate && awayTimer < 11*framerate && !cNice && !masaged ){       //C.1. User left without masaging - 5 second after, repeat once
+      massaged = true;
+    } else if (awayTimer == lastCommandTimer + 5*framerate && awayTimer < 11*framerate && !cNice && !massaging ){       //C.1. User left without masaging - 5 second after, repeat once
       modeC1(); //Mode C.1
       lastCommandTimer = awayTimer;
     }
