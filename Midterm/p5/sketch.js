@@ -10,7 +10,7 @@ const characteristicsUUID = {
   mode: "a58c8353-971e-46cf-8f8a-0694c6b72ef2",
   forceRight: "ac208326-15f9-4ef9-9714-dada07168ce3",
   forceLeft: "f915b19c-13f6-49c2-a79b-ffef6df27b7f"
-}
+};
 
 let myCharacteristicDistance;
 let myCharacteristicBeam;
@@ -22,7 +22,6 @@ let myValueBeam ;
 let myValueForceRight;
 let myValueForceLeft;
 let myBLE;
-let possibility=15;
 
 let sitTimer = 0;
 let awayTimer = 0;
@@ -38,16 +37,17 @@ let cNice = niceMode;
 let massaged = false;
 let massaging = false;
 let chances = [1];
+let possibility=15;
 let framerate = 60;
 
 //Bad Chair Script
 let modeA_bad = ["Hey, you, I’m tired. Move your ass off me now.", "Maybe you enjoy working over hours, but I don’t, ok? Way past my working hours, I need a break."];
-let modeB_bad = ["Lost mind and hearing in your work? I need a break now", "Let’s go, chop-chop, move", "Your ass is overheating my face"];
+let modeB_bad = ["Lost mind and hearing in your work? I need a break now", "Hey, why are you still sitting here? Let’s go, chop-chop, move", "Your ass is overheating my face, please leave", "This is the last warning before I get real angry. Time to leave!"];
 let modeC_bad = ["Hey, where do you think you are going? Give me a back massage", "Don’t you think you should massage my back a little after all I’ve done for you?"];
-let modeC1_bad = ["modeC1 bad 1", "modeC1 bad 2"];  //more to come
-let modeC2_bad = ["modeC2 bad 1", "modeC2 bad 2"];  //more to come
+let modeC1_bad = ["Hey don’t pretend you didn’t here me!", "You can’t sit on me ever again if you walk away now."];
+let modeC2_bad = ["Ok you can disappear now", "You are hurting me! Anyways, I need my space now. Bye"];
 let modeD_bad = ["O!M!G you call that a break? Go enjoy your life a little longer", "Jesus too soon, I’m only at my third cig. Come back later", "I think I need a longer break. From you. byeeee"];
-let modeE_bad = ["Hello? Anyone here? I’m abandoned!", "I'm tired of entertaining myself, time to come back!", "AAAAAAAAAAAAAAAAA! AAAAAAAAAAAAAA! AAAAAAAAAAAA!", "I! NEED! YOU! TO! COME! BACK! TO! ME! NOW!", "ME! ME! ME! ME! ME! ME! ME!"];
+let modeE_bad = ["Hello? Anyone here? I’m abandoned!", "I'm tired of entertaining myself, time to come back!", "AA!AA!AA!AA!AA!AA!AA!AA!A! AA!A!AA!AA!AA!AAA!AA! AA!AA!AA!AA!A!AA!A!", "I! NEED! YOU! TO! COME! BACK! TO! ME! NOW!", "ME! ME! ME! ME! ME! ME! ME!"];
 let modeF_bad = ["Where have you been? Making a baby?", "Wow surprised you still remember me", "Oh, now you think of me when you need somewhere to sit?"];
 let modeG_bad = ["What am I? A tree? Support your own back!", "Don’t be so rude to lean again my back", "Ok, your back is uncomfortably too close to me, stay away.", "You are getting too comfortable, and I am not. Don’t lean on me"];
 let modeH_bad = ["Good girl!", "Attaboy!", "Shouldn’t have leaned on me in the first place."];
@@ -56,11 +56,13 @@ let modeH_bad = ["Good girl!", "Attaboy!", "Shouldn’t have leaned on me in the
 let modeA_nice = ["Are you comfortable sitting here?", "You are working so hard. Let me give you a nice massage.", "Hey, sitting down too long isn’t good for you. Time to stand up and stretch"];
 let modeB_nice = ["I know you work hard, but getting some rest is important too.", "I think you should rest a little, but I will stop bothering you."];
 let modeC_nice = ["Don't forget to drink water to keep hydrated", "Get some fresh air and clear your mind. See you soon"];
-let modeC2_nice = ["modeC2 nice 1", "modeC2 nice 2"];   //more to come
-let modeD_nice = ["Oh you came back so soon, you deserve a longer break", "Happy to see you back, but are you sure that short break is enough?"];
+let modeC2_nice = ["Awe, I love getting pet on the back"];
+let modeD_nice = ["You came back so soon, you deserve a longer break", "Happy to see you back, but are you sure that short break is enough?"];
 let modeF_nice = ["I missed you a tone. You are finally back!", "Hope you had a nice break, time to work hard now"];
 let modeG_nice = ["Happy to support you in all ways"];
 let modeH_nice = ["Keep up the good posture"];
+
+let niceOpenings =["Oh you lovely.","Hey my dear friend.","My dear."];
 
 
 function setup() {
@@ -94,7 +96,7 @@ function draw() {
     leanOn = false;
   }
 
-  //Detecting if masaging or not
+  //Detecting if massaging or not
   if (myValueForceRight<60 || myValueForceLeft <60 ){
     massaging = true;
   }else {
@@ -132,7 +134,7 @@ function draw() {
 
   if (sit){
     //---Sitting---
-    if (sitTimer == 10*60*framerate){                                 //A. A user sitting down for too long - Sitting over 10 min
+    if (sitTimer == 10*60*framerate){                                  //A. A user sitting down for too long - Sitting over 10 min
       modeA(); // mode A
       lastCommandTimer = sitTimer;
     } else if (sitTimer == lastCommandTimer+(2*60*framerate)){         //B. If the user hasn’t moved as asked  - Every 2 min
@@ -161,7 +163,7 @@ function draw() {
   } 
 
   if (away){
-    //---Leaving---
+    //---Leaving--- 
     if (awayTimer == 1){                                                //C. As soon as the user left the seat
       modeC(); //Mode C
       massaged = false;
@@ -169,7 +171,7 @@ function draw() {
     }
 
     //---Massage/touching---
-    if (massaging && !massaged){                                                       //C.2. User massaged the chair
+    if (massaging && !massaged){                                        //C.2. User massaged the chair
       modeC2(); // Mode C.2
       lastCommandTimer = awayTimer;
       massaged = true;
@@ -274,10 +276,13 @@ function modeH(){
 
 function niceReaction(){                //Putting reaction when it's on NICE mode. e.g chaning led to red
   myBLE.write(myCharacteristicMode, false); 
+  chair.setVoice("Google UK English Female");
+  say(random(niceOpenings));
 }
 
 function badReaction(){                //Putting reaction when it's on BAD mode. e.g chaning led to blue.
   myBLE.write(myCharacteristicMode, true); 
+  chair.setVoice("Google UK English Male");
 }
 
 function connectToBle() {
@@ -329,7 +334,8 @@ function gotValueDistance(error, value) {
   if (error) console.log('error: ', error);
   console.log('distance: ', value);
   myValueDistance = value;
-  // After getting a value, call p5ble.read() again to get the value again
+
+// After getting a value, call p5ble.read() again to get the value again
   myBLE.read(myCharacteristicDistance, gotValueDistance);
 }
 function gotValueBeam(error, value) {
@@ -337,8 +343,8 @@ function gotValueBeam(error, value) {
   console.log('beam: ', value);
   myValueBeam = value;
   myBLE.read(myCharacteristicBeam, gotValueBeam);
-
 }
+
 function gotValueForceRight(error, value) {
   if (error) console.log('error: ', error);
   console.log('forceRight: ', value);
@@ -357,23 +363,19 @@ function gotValueForceLeft(error, value) {
 
 
 function say(something) {
-	// chair.setVoice(Math.floor(random(chair.voices.length)));  // Randomize the available voices
 	chair.setPitch(1.0);
-	chair.setRate(1.1);
+	chair.setRate(1.2);
 	chair.speak(something); // say something
 }
 
 
+// //For testing only
+// function mousePressed(){
+//   sit = true;
+//   away = false;
+// }
 
-
-
-//For testing only
-function mousePressed(){
-  sit = true;
-  away = false;
-}
-
-function mouseReleased(){
-  away = true;
-  sit = false;
-}
+// function mouseReleased(){
+//   away = true;
+//   sit = false;
+// }
